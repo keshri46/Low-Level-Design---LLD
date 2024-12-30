@@ -1,0 +1,127 @@
+package patterns.strategy.question.solidprinciples;
+
+class BeforeSingleResponsibility{
+    static class Entity{
+        String name;
+        int price;
+
+        public Entity(String name, int price) {
+            this.name = name;
+            this.price = price;
+        }
+
+    }
+
+    static class Invoice {
+        Entity entity;
+        int quantity;
+
+        public Invoice(Entity entity, int quantity) {
+            this.entity = entity;
+            this.quantity = quantity;
+        }
+
+        /*
+            First and main reason to change the Invoice class if there is a change in calculating invoice logic
+            For example, if there is a factor of discount and taxes
+                            on the Entity while calculating the total amount
+                            then we have to do change in the Invoice class
+         */
+        public int calculateTotal(){
+            return entity.price*this.quantity;
+        }
+
+        // Second reason to change the Invoice class if there is a change in printing invoice logic
+        public void printInvoice(){
+            // Printing Invoice Logic
+        }
+
+        // Third reason to change the Invoice class if there is a change in saving invoice logic
+        public void saveInvoice(){
+            // Saving Invoice Logic
+        }
+    }
+
+    public static void run() {
+        Invoice invoice = new Invoice(new Entity("Axxor Apex ",5000),2);
+        System.out.println("Total : "+invoice.calculateTotal());
+    }
+
+}
+
+class AfterSingleResponsibility{
+    static class Entity{
+        String name;
+        int price;
+
+        public Entity(String name, int price) {
+            this.name = name;
+            this.price = price;
+        }
+
+        @Override
+        public String toString() {
+            return "Entity{" +
+                    "Name= '" + name + '\'' +
+                    ", Price= " + price +
+                    '}';
+        }
+    }
+
+    static class Invoice {
+        Entity entity;
+        int quantity;
+
+        public Invoice(Entity entity, int quantity) {
+            this.entity = entity;
+            this.quantity = quantity;
+        }
+
+        /*
+            Single and only reason to change the Invoice class, if there is a change only in calculating invoice logic
+            For example, if there is a factor of discount and taxes
+                            on the Entity while calculating the total amount
+                            then we have to do change in the Invoice class
+         */
+        public int calculateTotal(){
+            return entity.price*this.quantity;
+        }
+
+        @Override
+        public String toString() {
+            return "Invoice [" +
+                     entity +
+                    ",\tQuantity= " + quantity +
+                    ",\tTotal=" + calculateTotal() +
+                    "]\t";
+        }
+    }
+
+    static class PrintInvoice {
+        //Single and only reason to change the PrintInvoice class, if there is a change only in printing invoice logic
+        static void printInvoice(Invoice invoice){
+            System.out.println("Total : Rs. "+invoice.calculateTotal()+" /-");
+        }
+    }
+
+    static class SaveInvoice{
+        //Single and only reason to change the SaveInvoice class, if there is a change only in saving invoice logic
+        static void saveInvoice(Invoice invoice){
+            System.out.println("Saving "+invoice+" to Database");
+        }
+    }
+
+    public static void run() {
+        Invoice invoice = new Invoice(new Entity("Studds Thunder D11",2000),3);
+        AfterSingleResponsibility.PrintInvoice.printInvoice(invoice);
+        AfterSingleResponsibility.SaveInvoice.saveInvoice(invoice);
+    }
+
+}
+
+public class SingleResponsibilityPrinciple {
+    public static void main(String[] args) {
+        BeforeSingleResponsibility.run();
+        AfterSingleResponsibility.run();
+    }
+}
